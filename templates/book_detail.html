@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Book Details</h1>
+
+    <div>
+        <h2>{{ book.title }}</h2>
+        <p>Author: {{ book.author }}</p>
+        <p>Published Date: {{ book.published_date }}</p>
+        <p>ISBN: {{ book.isbn }}</p>
+        <p>Pages: {{ book.pages }}</p>
+    </div>
+
+    <div>
+        <h2>Update Book</h2>
+        <form id="updateBookForm">
+            <input type="text" id="title" placeholder="Title" value="{{ book.title }}" required>
+            <input type="text" id="author" placeholder="Author" value="{{ book.author }}" required>
+            <input type="date" id="published_date" value="{{ book.published_date }}" required>
+            <input type="text" id="isbn" placeholder="ISBN" value="{{ book.isbn }}" required>
+            <input type="number" id="pages" placeholder="Pages" value="{{ book.pages }}" required>
+            <button type="submit">Update Book</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Delete Book</h2>
+        <button id="deleteBookButton">Delete Book</button>
+    </div>
+
+    <script src="/static/scripts.js"></script>
+    <script>
+        document.getElementById('updateBookForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const published_date = document.getElementById('published_date').value;
+            const isbn = document.getElementById('isbn').value;
+            const pages = document.getElementById('pages').value;
+
+            const response = await fetch('/books/{{ book.id }}/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, author, published_date, isbn, pages }),
+            });
+
+            if (response.ok) {
+                window.location.href = '/';
+            } else {
+                alert('Failed to update the book.');
+            }
+        });
+
+        document.getElementById('deleteBookButton').addEventListener('click', async function() {
+            const confirmDelete = confirm('Are you sure you want to delete this book?');
+            if (confirmDelete) {
+                const response = await fetch('/books/{{ book.id }}/', {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    alert('Failed to delete the book.');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
